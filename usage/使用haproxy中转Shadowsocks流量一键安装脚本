@@ -1,0 +1,89 @@
+本脚本适用环境：
+系统支持：CentOS，Debian，Ubuntu
+内存要求：≥128M
+日期：2017 年 10 月 26 日
+
+关于本脚本：
+一键安装并配置 haproxy，实现中转 Shadowsocks 的功能。
+
+背景说明：
+Shadowsocks，一款优秀的基于各种加密方式的 socks 代理工具。既然已经有了 Shadowsocks 可以直接使用，为什么还要通过第三方服务器来中转呢？原因无非以下几点：
+1、克服本地带宽和国际带宽通信不足。本地直连 Shadowsocks 走的是国际流量，由于众所周知的原因，某些地区会被限速甚至干扰。通过国内机房的第三方服务器来做中转，从而克服本地网络国际带宽不足的问题。
+2、隐藏真实 IP 的需要。这点不多解释。
+
+简要讲解：
+假设你的本地电脑为 A，haproxy 服务器为 B，Shadowsocks 服务器为 C。
+A 当然可以直接去连 C，但如上所说，往往你的本地网络国际带宽不足，实际上的可用速度并不快。假设 B 是国内某机房的服务器，机房服务器带宽一般来说比你本地网络带宽要大得多。A 连接 B，通过 B 连接 C 中转流量，如此一来，虽然成本有所上升，但却能明显改善网络带宽情况。
+
+使用方法：
+使用root用户登录，运行以下命令：
+
+wget --no-check-certificate https://raw.githubusercontent.com/wjk199511140034/ss-onekeyinstall/master/haproxy.sh
+chmod +x haproxy.sh
+./haproxy.sh
+安装的过程中，交互提示如下：
+
+haproxy
+
+第一步输入需要 haproxy 代理的端口号，这里要跟 Shadowsocks 服务器开放的端口号一致。
+第二步输入 Shadowsocks 公网 IPv4（注意：不是 haproxy 本机的 IP 地址）
+
+安装完成后，脚本提示如下：
+
+Congratulations, haproxy install completed.
+Your haproxy Server IP: your_haproxy_server_ip
+Your haproxy Server port: your_haproxy_server_port
+Your Input Shadowsocks IP: your_shadowsocks_server_ip
+
+Welcome to visit:https://shadowsocks.be/10.html
+Enjoy it.
+
+卸载方法：
+使用 root 用户登录，Debian 或 Ubuntu 系统运行以下命令：
+
+apt-get -y remove haproxy
+CentOS 系统运行如下命令：
+
+yum -y remove haproxy
+然后再删除 haproxy 的配置文件目录即可，命令如下：
+
+rm -rf /etc/haproxy
+使用命令：
+启动：service haproxy start
+停止：service haproxy stop
+重启：service haproxy restart
+状态：service haproxy status
+
+配置文件路径：/etc/haproxy/haproxy.cfg
+
+其他说明：
+
+1、在安装此脚本之前，请确保 Shadowsocks 服务器能正常使用，也就是说，你直接连上 Shadowsocks 服务器的可用的。
+如何一键搭建 Shadowsocks 服务器，请参考本站相关文章。
+
+2、如果你需要代理多个端口，请自行修改 haproxy 的配置文件 /etc/haproxy/haproxy.cfg
+修改如下所示的部分：
+
+frontend ss-8989
+bind *:8989
+default_backend ss-8989
+backend ss-8989
+server server1 111.222.111.222:8989 maxconn 20480
+
+111.222.111.222 是示例 IP，你需要改成你自己的 Shadowsocks 服务器 IP 地址。
+其中，frontend 和 backend 是成对出现的。如果你需要添加更多端口，只需复制这两处，并做相应修改即可。
+frontend 是 haproxy 使用的端口，backend 是连接 Shadowsocks 服务器的端口。我这里为避免混淆，把两者端口统一了。
+
+3、客户端配置说明
+client
+
+服务器IP：此处填写 haproxy 服务器的公网 IP（脚本最后显示的 Your haproxy Server IP）
+服务器端口：此处填写 haproxy 服务器代理的端口（脚本最后显示的 Your haproxy Server port）
+密码：此处填写 Shadowsocks 服务器所对应的端口的密码
+加密：此处选择 Shadowsocks 服务器所对应的端口的加密方式
+协议：此处可选，如果你安装的是 ShadowsocksR 服务端可选择，默认即可
+混淆：此处可选，如果你安装的是 ShadowsocksR 服务端可选择，默认即可
+
+4、本脚本没有对防火墙进行任何设置。因此，在安装完毕后，如果你发现连接不上，可以尝试更改防火墙设置或关闭防火墙。
+
+5、值得注意的是，haproxy 只能使用 TCP 方式中转流量。

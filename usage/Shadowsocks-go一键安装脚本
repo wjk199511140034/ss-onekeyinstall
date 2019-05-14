@@ -1,0 +1,124 @@
+本脚本适用环境：
+系统支持：CentOS，Debian，Ubuntu
+内存要求：≥64M
+日期：2018 年 11 月 05 日
+
+关于本脚本：
+一键安装 Go 版的 Shadowsocks 最新版本 1.2.2。与 Python 版不同的是，其客户端程序能使用多个服务端配置，本脚本安装的是服务端程序。
+友情提示：如果你有问题，请先参考这篇《Shadowsocks Troubleshooting》后再问。
+
+
+默认配置：
+服务器端口：自己设定（如不设定，默认从 9000-19999 之间随机生成）
+密码：自己设定（如不设定，默认为 teddysun.com）
+加密方式：自己设定（如不设定，默认为 aes-256-cfb）
+
+Shadowsocks for Windows 客户端下载：
+https://github.com/shadowsocks/shadowsocks-windows/releases
+
+使用方法：
+使用root用户登录，运行以下命令：
+
+wget --no-check-certificate -O shadowsocks-go.sh https://raw.githubusercontent.com/wjk199511140034/ss-onekeyinstall/master/shadowsocks-go.sh
+chmod +x shadowsocks-go.sh
+./shadowsocks-go.sh 2>&1 | tee shadowsocks-go.log
+安装完成后，脚本提示如下：
+
+Congratulations, Shadowsocks-go server install completed!
+Your Server IP        :your_server_ip
+Your Server Port      :your_server_port
+Your Password         :your_password
+Your Encryption Method:your_encryption_method
+
+Welcome to visit:https://teddysun.com/392.html
+Enjoy it!
+卸载方法：
+使用 root 用户登录，运行以下命令：
+
+./shadowsocks-go.sh uninstall
+其他事项：
+客户端配置的参考链接：https://teddysun.com/339.html
+
+安装完成后即已后台启动 Shadowsocks-go ，运行：
+
+/etc/init.d/shadowsocks status
+可以查看 Shadowsocks-go 进程是否已经启动。
+本脚本安装完成后，已将 shadowsocks-go 加入开机自启动。
+
+使用命令：
+启动：/etc/init.d/shadowsocks start
+停止：/etc/init.d/shadowsocks stop
+重启：/etc/init.d/shadowsocks restart
+状态：/etc/init.d/shadowsocks status
+
+多用户多端口配置文件示例：
+配置文件路径：/etc/shadowsocks/config.json
+
+{
+    "port_password":{
+         "8989":"password0",
+         "9001":"password1",
+         "9002":"password2",
+         "9003":"password3",
+         "9004":"password4"
+    },
+    "method":"your_encryption_method",
+    "timeout":600
+}
+官方版本的示例 ，详见这里。
+
+更多版本 Shadowsocks 服务端一键安装脚本：
+ShadowsocksR 版一键安装脚本（CentOS，Debian，Ubuntu）
+Shadowsocks Python 版一键安装脚本（CentOS，Debian，Ubuntu）
+CentOS 下 shadowsocks-libev 一键安装脚本
+Debian 下 shadowsocks-libev 一键安装脚本
+Shadowsocks 一键安装脚本（四合一）
+
+更新日志：
+2018 年 11 月 05 日：
+基于当前 Github 上的最新代码，自主编译 x86 和 x86_64 二进制可执行文件，版本号 1.2.2。
+
+2018 年 03 月 15 日：
+基于当前 Github 上的最新代码，自主编译 x86 和 x86_64 二进制可执行文件。
+
+2018 年 02 月 07 日：
+修改：将默认端口从 8989 改为从 9000-19999 之间随机生成。
+
+2017 年 07 月 22 日：
+新增：安装时可选 9 种加密方式的其中之一。如下所示：
+
+aes-256-cfb
+aes-192-cfb
+aes-128-cfb
+aes-256-ctr
+aes-192-ctr
+aes-128-ctr
+chacha20-ietf
+chacha20
+rc4-md5
+2017 年 02 月 18 日：
+基于当前 Github 上的最新代码，使用最新的 go 1.8 自主编译 x86 和 x86_64 二进制文件。
+
+2017 年 02 月 13 日：
+升级 Shadowsocks-go 版到版本 1.2.1（基于当前 Github 上的最新代码，用 go 1.7.5 自主编译完成的 x86 和 x86_64 二进制文件）。
+
+2017 年 01 月 27 日：
+更新 Shadowsocks-go 到版本 1.2.1（仅适用于 x86_64 系统，x86 系统仍是 1.1.5）。
+
+2016 年 05 月 12 日：
+新增在 CentOS 7 下的防火墙规则设置。
+
+2016 年 05 月 04 日：
+更新 Shadowsocks-go 到版本 1.1.5。
+
+2015 年 08 月 01 日：
+新增自定义服务器端口功能（如不设定，默认为 8989）。
+
+2015 年 05 月 11 日：
+更新 Shadowsocks-go 到版本 1.1.4。
+
+2015 年 03 月 09 日：
+新增支持在 Debian，Ubuntu 下安装。
+
+2015 年 01 月 08 日：
+修改了启动脚本 /etc/init.d/shadowsocks ，按照 CentOS 的 chkconfig 标准语法修改了一下（原来使用的是作者 Github 上自带的）。去掉了以 nobody 用户启动 shadowsocks 的方式，改为直接以当前登录用户直接启动（一般是 root 用户）。开机自启动，以及修改端口号提示无权限的问题已经解决。
